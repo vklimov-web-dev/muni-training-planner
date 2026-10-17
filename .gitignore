@@ -1,0 +1,23 @@
+node_modules/
+coverage/
+.next/
+out/
+.vercel/
+
+.env
+.env.*
+!.env.example
+
+# Supplied source exports stay local. Only explicitly sanitized derivatives may be committed.
+/absolvovana_skoleni.csv
+/katalog_skoleni.csv
+/terminy_skoleni.csv
+/zamestnanci.csv
+/data/raw/*
+!/data/raw/README.md
+
+*.local
+*.log
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
