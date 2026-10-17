@@ -1,5 +1,6 @@
 import {
   normalizeCourseCode,
+  normalizeMatchKey,
   parseInteger,
   parseSourceDate,
 } from "./normalizers";
@@ -18,6 +19,7 @@ export function parseSessions(
 ): ImportedSession[] {
   const results: ImportedSession[] = [];
   const sessionIds = new Set<string>();
+  const sessionSignatures = new Set<string>();
 
   rawRows.forEach((rawRow, index) => {
     const row = index + 2;
@@ -132,6 +134,21 @@ export function parseSessions(
       return;
     }
 
+    const signature = [
+      trainingCode,
+      parsedDate.value.toISOString(),
+      normalizeMatchKey(timeRange),
+      normalizeMatchKey(location),
+    ].join("|");
+    if (sessionSignatures.has(signature)) {
+      addIssue(issues, {
+        source: "sessions",
+        row,
+        code: "duplicate_session",
+      });
+      return;
+    }
+
     if (capacity === 0) {
       addIssue(issues, {
         source: "sessions",
@@ -161,6 +178,7 @@ export function parseSessions(
     }
 
     sessionIds.add(id);
+    sessionSignatures.add(signature);
     results.push({
       id,
       trainingCode,

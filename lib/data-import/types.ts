@@ -12,6 +12,7 @@ export type ImportIssue = {
   severity: "warning" | "rejected";
   code:
     | "duplicate_id"
+    | "duplicate_session"
     | "duplicate_email"
     | "expiry_mismatch"
     | "future_record"

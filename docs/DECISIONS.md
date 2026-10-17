@@ -41,12 +41,21 @@ Tento soubor zachycuje pouze rozhodnutí, která ovlivňují rozsah, interpretac
 
 - **Rozhodnutí:** Import podporuje UTF-8 i Windows-1250, čárku i středník jako oddělovač a datum ve formátu ISO, českém zápisu nebo jako celé sériové číslo Excelu. Neplatná data se neopravují odhadem.
 - **Bezpečné normalizace:** rozdíly ve velikosti písmen a oddělovačích kódů (`BOZP_Z` → `BOZP-Z`) a jednoznačný údaj `2 roky` → `24` měsíců. Text útvaru a pozice se pro porovnání převádí na samostatný klíč bez diakritiky; původní zobrazovaná hodnota zůstává zachována.
-- **Odmítnuté řádky:** chybějící povinné hodnoty, neplatná data, neznámý zaměstnanec nebo školení a datum konce platnosti před datem absolvování. Opakované ID absolvování se uchová pomocí interního klíče, ale import je označí varováním.
+- **Odmítnuté řádky:** chybějící povinné hodnoty, neplatná data, neznámý zaměstnanec nebo školení, datum konce platnosti před datem absolvování a přesný duplikát termínu se stejným školením, datem, časem a místem. Opakované ID absolvování se uchová pomocí interního klíče, ale import je označí varováním.
 - **Platnost:** uchovává se datum platnosti ze zdroje i datum vypočtené z katalogu. Rozdíl se hlásí a nezakrývá přepsáním jedné hodnoty druhou.
 - **Budoucí záznamy:** validní řádky po datu exportu se uchovají s varováním. Přehled k 1. 10. 2026 je při výpočtu nebude považovat za již absolvovaná školení.
-- **Výsledek kontroly:** přijato 174 z 174 zaměstnanců, 10 z 10 školení, 32 z 34 termínů a 2 842 z 2 868 záznamů o absolvování. Odmítnuté řádky zůstávají dohledatelné podle zdroje, čísla řádku a typu chyby; report nevypisuje jejich osobní obsah.
+- **Výsledek kontroly:** přijato 174 z 174 zaměstnanců, 10 z 10 školení, 31 z 34 termínů a 2 842 z 2 868 záznamů o absolvování. Odmítnuté řádky zůstávají dohledatelné podle zdroje, čísla řádku a typu chyby; report nevypisuje jejich osobní obsah.
+
+## 2026-10-17 — Vyhodnocení platnosti
+
+- **Rozhodnutí:** Přehled zahrnuje zaměstnance aktivní k datu exportu. Ukončené pracovní poměry, rodičovská dovolená a budoucí nástupy nejsou v akčním přehledu.
+- **Povinnost:** Pravidla pro všechny, útvar a pozici se vyhodnocují jako alternativy; hodnoty útvaru a pozice se porovnávají přes normalizovaný klíč.
+- **Platnost:** Použije se poslední absolvování nejpozději k datu exportu a konec platnosti vypočtený podle katalogu. Datum `platnost_do` je včetně. Školení končící během 90 dnů je „brzy končící“, platnost `0` znamená jednorázové školení bez expirace.
+- **Důvod:** Jednotný výpočet podle katalogu je reprodukovatelný; nekonzistentní zdrojové datum zůstává zachováno pro audit, ale neřídí stav dashboardu.
 
 ## 2026-10-17 — Doporučování termínů
 
 - **Rozhodnutí:** Doporučení bude vysvětlitelné a deterministické, založené na povinnosti školení, naléhavosti, způsobilosti termínu a zbývající kapacitě.
+- **Priorita:** Pro brzy končící školení se nejprve rezervuje nejpozdější volné místo ještě před koncem platnosti. Zbylá místa se chronologicky přidělí chybějícím, propadlým a případům, které už před termínem stihnout nelze; v rámci skupiny rozhoduje nejbližší konec platnosti a stabilní řazení zaměstnanců. Použijí se pouze budoucí plánované termíny a záporná volná kapacita se považuje za nulu.
+- **Omezení dat:** Export obsahuje jen počet obsazených míst, nikoli seznam přihlášených. Doporučení proto odečítá obsazenost, ale nemůže poznat, zda už konkrétní zaměstnanec přihlášen je; v produkci by bylo nutné napojení na registrační systém.
 - **Důvod:** Pro tento problém je auditovatelné pravidlo vhodnější než LLM. Uživatel musí rozumět, proč byl člověk doporučen a proč někdo termín nemá.

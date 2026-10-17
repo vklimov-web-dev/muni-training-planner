@@ -42,5 +42,7 @@ Použitý nástroj: OpenAI Codex. AI slouží jako pomocník pro analýzu, imple
 - `npm run data:check` načte všechny čtyři reálné exporty bez zápisu do databáze a vypíše pouze agregovaný report;
 - přijaté a odmítnuté počty byly porovnány s nezávislou jednorázovou analýzou zdrojových souborů.
 - Původní konfigurace používala pooled URL také pro migrace a importní skript nenačetl lokální `.env`. Po ověření proti skutečné Neon databázi byla migrace přepnuta na přímé `DIRECT_URL`, import explicitně načítá prostředí a obě cesty byly prakticky spuštěny.
+- Při přípravě doporučení AI nejprve započítala dva řádky se stejným školením, datem, časem a místem jako dva samostatné termíny. Kontrola zdrojových řádků odhalila riziko falešné kapacity; přesný duplikát se nyní odmítá a pravidlo je pokryto testem.
+- Stav a doporučení se neodvozují pomocí LLM. AI pomohla implementovat deterministická pravidla, která byla zpřesněna o pevné datum exportu, 90denní horizont, ignorování budoucích absolvování, zbývající kapacitu a omezení chybějícího seznamu přihlášených.
 
 Záznam bude doplňován jen při podstatném použití AI, změně rozhodnutí nebo opravě jejího výstupu; nebude obsahovat kompletní historii konverzace.

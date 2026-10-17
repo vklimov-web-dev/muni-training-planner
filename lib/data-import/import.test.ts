@@ -51,6 +51,17 @@ function createSources(): RawSources {
         cena_na_osobu: "",
         stav: "plánováno",
       },
+      {
+        id_terminu: "T3",
+        kod_skoleni: "ZDVIH",
+        datum: "15. 10. 2026",
+        cas: "09:00-12:00",
+        misto: "Učebna",
+        kapacita: "20",
+        obsazeno: "0",
+        cena_na_osobu: "2 100 Kč",
+        stav: "plánováno",
+      },
     ],
     completions: [
       {
@@ -132,6 +143,11 @@ describe("importSources", () => {
         expect.objectContaining({
           source: "sessions",
           code: "invalid_date",
+          severity: "rejected",
+        }),
+        expect.objectContaining({
+          source: "sessions",
+          code: "duplicate_session",
           severity: "rejected",
         }),
         expect.objectContaining({
