@@ -2,7 +2,9 @@
 
 Webová aplikace pro vyhodnocení platnosti povinných školení a návrh zaměstnanců na dostupné termíny.
 
-Stack: Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL a Prisma ORM. Aplikace bude nasazena na Vercel; databázové dotazy poběží pouze na serveru.
+**Živá aplikace:** [muni-training-planner.vercel.app](https://muni-training-planner.vercel.app/)
+
+Stack: Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL a Prisma ORM. Aplikace je nasazena na Vercelu; databázové dotazy běží pouze na serveru.
 
 ## Co aplikace ukazuje
 
@@ -66,6 +68,9 @@ Průběžná rozhodnutí jsou v [`docs/DECISIONS.md`](docs/DECISIONS.md), struč
 4. Nasaďte aplikaci a ověřte hlavní stránku a `/api/health`. Endpoint vrací
    `200`, pouze pokud je dostupná i databáze, jinak `503`; technické podrobnosti
    připojení nezveřejňuje.
+
+Produkční kontrola stavu je dostupná na
+[`/api/health`](https://muni-training-planner.vercel.app/api/health).
 
 Migrace nejsou součástí build příkazu. Preview nebo opakovaný deployment tak
 nemůže vedlejším efektem změnit databázové schéma. Vercel používá standardní
