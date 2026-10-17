@@ -54,3 +54,22 @@ npm run db:import
 Zdrojové CSV exporty zůstávají pouze v lokálním prostředí. Git je ignoruje a do veřejného buildu se nedostanou. Import neukládá rodná čísla, e-mailové adresy, volné poznámky, poskytovatele ani ceny. E-mail se použije pouze v paměti k dohledání vztahu vedoucí–zaměstnanec.
 
 Průběžná rozhodnutí jsou v [`docs/DECISIONS.md`](docs/DECISIONS.md), stručný záznam o použití AI v [`docs/AI_JOURNAL.md`](docs/AI_JOURNAL.md).
+
+## Nasazení na Vercel
+
+1. Pro cílovou Neon databázi spusťte z důvěryhodného lokálního prostředí
+   `npm run db:migrate:deploy` a poté `npm run db:import`.
+2. Importujte GitHub repozitář do Vercelu jako Next.js projekt.
+3. Ve Vercelu nastavte tajné proměnné `DATABASE_URL` (pooled připojení) a
+   `DIRECT_URL` (přímé připojení pro Prisma CLI). Nepoužívejte prefix
+   `NEXT_PUBLIC_`.
+4. Nasaďte aplikaci a ověřte hlavní stránku a `/api/health`. Endpoint vrací
+   `200`, pouze pokud je dostupná i databáze, jinak `503`; technické podrobnosti
+   připojení nezveřejňuje.
+
+Migrace nejsou součástí build příkazu. Preview nebo opakovaný deployment tak
+nemůže vedlejším efektem změnit databázové schéma. Vercel používá standardní
+`npm run build`; zvláštní `vercel.json` není potřeba.
+
+GitHub Actions na každém pull requestu a změně hlavní větve provede čistou
+instalaci a `npm run check`.

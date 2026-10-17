@@ -54,5 +54,6 @@ Použitý nástroj: OpenAI Codex. AI slouží jako pomocník pro analýzu, imple
 - Výstup byl ověřen komponentovými testy, typovou kontrolou, lintováním a ruční kontrolou stránky nad skutečně importovanými daty v desktopovém i úzkém rozložení.
 - Lokální server upozornil na budoucí oslabení významu `sslmode=require` v PostgreSQL driveru. Místo ignorování upozornění byly vzorové i lokální Neon URL přepnuty na explicitní `sslmode=verify-full`; tajné hodnoty zůstaly mimo výstupy a Git.
 - Při lokální kontrole AI chybně spustila produkční build souběžně s vývojovým serverem a poté přepnula vývojový bundler. Tím zanechala nekonzistentní generovaný obsah v `.next/dev` a následující spuštění Turbopacku skončilo interní chybou. Kontrola panic logu, časů souborů a Git stavu potvrdila, že zdrojové změny zůstaly nedotčené; pro další ověřování se build a dev server nespouštějí souběžně a při změně bundleru se zahazuje pouze generovaný cache.
+- Při přípravě nasazení byl původní statický health endpoint zpochybněn: vracel `ok`, i když databáze nemusela být dostupná. Byl nahrazen minimálním databázovým dotazem, chybovým stavem `503` bez detailů a regresními testy pro obě větve.
 
 Záznam bude doplňován jen při podstatném použití AI, změně rozhodnutí nebo opravě jejího výstupu; nebude obsahovat kompletní historii konverzace.

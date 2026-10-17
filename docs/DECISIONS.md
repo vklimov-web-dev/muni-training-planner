@@ -65,3 +65,9 @@ Tento soubor zachycuje pouze rozhodnutí, která ovlivňují rozsah, interpretac
 - **Rozhodnutí:** Výchozí pohled ukazuje pouze chybějící, propadlá a brzy končící školení. Platné záznamy zůstávají dostupné filtrem; tabulka má omezenou výšku, aby byly termíny dosažitelné bez procházení stovek řádků.
 - **Kvalita dat:** Varianty názvů útvarů se ve filtru seskupují bez ohledu na diakritiku a velikost písmen. Původní text se v řádku nemění, aby dashboard nezakrýval stav zdroje. Překročení kapacity termínu je zobrazeno jako datový problém, nikoli pouze jako nulová volná kapacita.
 - **Bezpečnost:** Databázový přístup je v server-only datové vrstvě. Do interaktivní komponenty se předává explicitní serializovatelné DTO bez zdrojových e-mailů, poznámek, cen, connection stringů a dalších nepotřebných polí.
+
+## 2026-10-17 — Nasazení a provozní kontrola
+
+- **Rozhodnutí:** Vercel build pouze generuje Prisma klienta a sestaví aplikaci; databázové migrace a jednorázový import se spouštějí explicitně z důvěryhodného prostředí.
+- **Důvod:** Preview ani opakovaný deployment nesmí automaticky měnit schéma nebo obsah sdílené databáze.
+- **Kontrola dostupnosti:** `/api/health` provede minimální dotaz `SELECT 1`, odpověď necachuje a při nedostupné databázi vrátí `503` bez technických detailů. CI používá zástupné connection stringy pouze pro generování klienta a build, k databázi se nepřipojuje.
