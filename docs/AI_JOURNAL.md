@@ -27,4 +27,20 @@ Použitý nástroj: OpenAI Codex. AI slouží jako pomocník pro analýzu, imple
 - smoke test hlavní stránky a odpovědi `/api/health` na lokálním production serveru;
 - kontrola staged souborů a potvrzení, že zdrojové CSV ani build artefakty nejsou součástí commitu.
 
+### Datový model a import
+
+- AI pomohla navrhnout normalizovaný PostgreSQL model, parser čtyř rozdílných exportů a testy hraničních případů.
+- První analytický skript chybně předpokládal číselnou platnost v měsících a skončil na hodnotě `2 roky`. Import byl upraven tak, aby tuto jednoznačnou hodnotu normalizoval na 24 měsíců a změnu zaznamenal.
+- První kontrola dat považovala většinu dat absolvování za chybnou, protože ověřovala pouze ISO formát. Po kontrole zdroje byly explicitně doplněny české formáty a sériová data Excelu; neexistující datum `31. 9. 2026` naopak zůstává odmítnuté.
+- Bylo zpochybněno automatické přepisování konce platnosti podle katalogu. Datový model proto uchovává zvlášť hodnotu ze zdroje a vypočtenou hodnotu a neshody pouze hlásí.
+- Prisma CLI schéma správně validovalo a vygenerovalo klienta, ale `migrate diff` v pracovním prostředí nevytvořil SQL ani chybu. Po kontrole výstupu byla počáteční migrace zapsána explicitně a doplněna o databázová omezení.
+- CLI `tsx` v omezeném prostředí selhal při vytvoření IPC socketu. Projektové skripty proto používají oficiální Node import hook `node --import tsx`, který stejný kód spustil bez pomocného procesu.
+
+### Ověření importu
+
+- unit testy pokrývají ISO a česká data, sériové datum Excelu, neplatný kalendářní den, normalizaci kódů, Windows-1250, minimalizaci osobních dat, neznámé vazby, překročenou kapacitu a budoucí záznam;
+- `npm run data:check` načte všechny čtyři reálné exporty bez zápisu do databáze a vypíše pouze agregovaný report;
+- přijaté a odmítnuté počty byly porovnány s nezávislou jednorázovou analýzou zdrojových souborů.
+- Původní konfigurace používala pooled URL také pro migrace a importní skript nenačetl lokální `.env`. Po ověření proti skutečné Neon databázi byla migrace přepnuta na přímé `DIRECT_URL`, import explicitně načítá prostředí a obě cesty byly prakticky spuštěny.
+
 Záznam bude doplňován jen při podstatném použití AI, změně rozhodnutí nebo opravě jejího výstupu; nebude obsahovat kompletní historii konverzace.

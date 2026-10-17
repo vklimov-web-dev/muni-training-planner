@@ -4,7 +4,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: [".next", "out", "coverage"] },
+  { ignores: [".next", "out", "coverage", "generated"] },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {

@@ -3,6 +3,7 @@ coverage/
 .next/
 out/
 .vercel/
+/generated/prisma/
 
 .env
 .env.*
@@ -13,8 +14,6 @@ out/
 /katalog_skoleni.csv
 /terminy_skoleni.csv
 /zamestnanci.csv
-/data/raw/*
-!/data/raw/README.md
 
 *.local
 *.log

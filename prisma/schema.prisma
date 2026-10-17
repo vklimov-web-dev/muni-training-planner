@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  PARENTAL_LEAVE
+  ENDED
+}
+
+enum RequirementKind {
+  ALL
+  UNIT
+  POSITION
+}
+
+enum TrainingSessionStatus {
+  PLANNED
+  CANCELLED
+}
+
+model Employee {
+  id          String               @id @db.VarChar(32)
+  firstName   String               @db.VarChar(100)
+  lastName    String               @db.VarChar(100)
+  unit        String?              @db.VarChar(150)
+  unitKey     String?              @db.VarChar(150)
+  position    String               @db.VarChar(150)
+  positionKey String               @db.VarChar(150)
+  startedAt   DateTime             @db.Date
+  endedAt     DateTime?            @db.Date
+  status      EmploymentStatus
+  managerId   String?              @db.VarChar(32)
+  manager     Employee?            @relation("EmployeeManager", fields: [managerId], references: [id], onDelete: SetNull)
+  reports     Employee[]           @relation("EmployeeManager")
+  completions TrainingCompletion[]
+
+  @@index([status, unitKey])
+  @@index([managerId])
+}
+
+model Training {
+  code           String                @id @db.VarChar(32)
+  name           String                @db.VarChar(200)
+  validityMonths Int?
+  requirements   TrainingRequirement[]
+  completions    TrainingCompletion[]
+  sessions       TrainingSession[]
+}
+
+model TrainingRequirement {
+  id            Int             @id @default(autoincrement())
+  trainingCode  String          @db.VarChar(32)
+  kind          RequirementKind
+  value         String?         @db.VarChar(150)
+  normalizedKey String?         @db.VarChar(150)
+  training      Training        @relation(fields: [trainingCode], references: [code], onDelete: Cascade)
+
+  @@index([kind, normalizedKey])
+  @@index([trainingCode])
+}
+
+model TrainingCompletion {
+  id                   Int       @id @default(autoincrement())
+  sourceId             String    @db.VarChar(50)
+  employeeId           String    @db.VarChar(32)
+  trainingCode         String    @db.VarChar(32)
+  completedAt          DateTime  @db.Date
+  recordedValidUntil   DateTime? @db.Date
+  calculatedValidUntil DateTime? @db.Date
+  employee             Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  training             Training  @relation(fields: [trainingCode], references: [code], onDelete: Cascade)
+
+  @@index([employeeId, trainingCode, completedAt])
+  @@index([trainingCode, recordedValidUntil])
+  @@index([sourceId])
+}
+
+model TrainingSession {
+  id           String                @id @db.VarChar(32)
+  trainingCode String                @db.VarChar(32)
+  date         DateTime              @db.Date
+  timeRange    String                @db.VarChar(32)
+  location     String                @db.VarChar(200)
+  capacity     Int
+  occupied     Int
+  status       TrainingSessionStatus
+  training     Training              @relation(fields: [trainingCode], references: [code], onDelete: Cascade)
+
+  @@index([status, date])
+  @@index([trainingCode, date])
+}
