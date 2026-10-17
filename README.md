@@ -4,6 +4,15 @@ Webová aplikace pro vyhodnocení platnosti povinných školení a návrh zaměs
 
 Stack: Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL a Prisma ORM. Aplikace bude nasazena na Vercel; databázové dotazy poběží pouze na serveru.
 
+## Co aplikace ukazuje
+
+- souhrn aktivních zaměstnanců a stavů `chybí`, `propadlé`, `končí brzy` a `platné` k pevnému datu exportu;
+- filtrovatelný přehled povinných kombinací zaměstnance a školení;
+- filtrovatelná doporučení konkrétních osob na plánované termíny podle naléhavosti a zbývající kapacity;
+- případy, které nelze vyřešit před koncem platnosti, a termíny s překročenou kapacitou.
+
+Varianty názvů útvarů se ve filtru slučují přes normalizovaný klíč, ale v jednotlivých záznamech zůstává vidět původní hodnota z exportu. Aplikace data pouze čte; registraci na termín neprovádí.
+
 ## Vývoj
 
 Požadavky:

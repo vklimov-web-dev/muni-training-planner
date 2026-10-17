@@ -45,4 +45,14 @@ Použitý nástroj: OpenAI Codex. AI slouží jako pomocník pro analýzu, imple
 - Při přípravě doporučení AI nejprve započítala dva řádky se stejným školením, datem, časem a místem jako dva samostatné termíny. Kontrola zdrojových řádků odhalila riziko falešné kapacity; přesný duplikát se nyní odmítá a pravidlo je pokryto testem.
 - Stav a doporučení se neodvozují pomocí LLM. AI pomohla implementovat deterministická pravidla, která byla zpřesněna o pevné datum exportu, 90denní horizont, ignorování budoucích absolvování, zbývající kapacitu a omezení chybějícího seznamu přihlášených.
 
+### Dashboard
+
+- AI pomohla vytvořit serverově načítaný dashboard, interaktivní filtry, stavy načítání a chyby a komponentové testy.
+- První verze filtru útvarů přímo zobrazila všechny textové varianty ze zdroje (`Správa budov`, `správa budov`, `SPRÁVA BUDOV`). Při kontrole v prohlížeči byl tento výstup zpochybněn: filtr nyní varianty seskupuje, ale tabulka dál ukazuje původní hodnotu kvůli transparentnosti.
+- První verze označila termíny s obsazeností nad kapacitou jen jako „bez volných míst“. To skrývalo datový problém; po vizuální kontrole dashboard výslovně ukazuje překročení kapacity.
+- AI následně definovala filtr „Bez volných míst“ příliš úzce: zahrnul pouze přesně naplněné termíny a vyloučil například stav `31/30`. Autor na chybu upozornil; nejprve ji reprodukoval nový regresní test a podmínka byla opravena na `obsazeno >= kapacita`. Samostatný filtr „Překročená kapacita“ zůstává užší (`obsazeno > kapacita`).
+- Výstup byl ověřen komponentovými testy, typovou kontrolou, lintováním a ruční kontrolou stránky nad skutečně importovanými daty v desktopovém i úzkém rozložení.
+- Lokální server upozornil na budoucí oslabení významu `sslmode=require` v PostgreSQL driveru. Místo ignorování upozornění byly vzorové i lokální Neon URL přepnuty na explicitní `sslmode=verify-full`; tajné hodnoty zůstaly mimo výstupy a Git.
+- Při lokální kontrole AI chybně spustila produkční build souběžně s vývojovým serverem a poté přepnula vývojový bundler. Tím zanechala nekonzistentní generovaný obsah v `.next/dev` a následující spuštění Turbopacku skončilo interní chybou. Kontrola panic logu, časů souborů a Git stavu potvrdila, že zdrojové změny zůstaly nedotčené; pro další ověřování se build a dev server nespouštějí souběžně a při změně bundleru se zahazuje pouze generovaný cache.
+
 Záznam bude doplňován jen při podstatném použití AI, změně rozhodnutí nebo opravě jejího výstupu; nebude obsahovat kompletní historii konverzace.

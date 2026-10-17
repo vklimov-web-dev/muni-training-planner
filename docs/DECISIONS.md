@@ -35,7 +35,7 @@ Tento soubor zachycuje pouze rozhodnutí, která ovlivňují rozsah, interpretac
 
 - **Rozhodnutí:** Produkční databáze běží v Neon PostgreSQL v regionu Frankfurt. Aplikace používá pooled `DATABASE_URL`, Prisma CLI přímé `DIRECT_URL`.
 - **Důvod:** Pooling omezuje počet připojení ze serverless instancí Vercelu, zatímco přímé připojení je spolehlivější pro migrace.
-- **Bezpečnost:** Skutečné connection stringy jsou pouze v ignorovaném `.env` a později v šifrovaných proměnných prostředí Vercelu. Repozitář obsahuje jen zástupné hodnoty v `.env.example`.
+- **Bezpečnost:** Skutečné connection stringy jsou pouze v ignorovaném `.env` a později v šifrovaných proměnných prostředí Vercelu. Repozitář obsahuje jen zástupné hodnoty v `.env.example`; TLS používá explicitní `sslmode=verify-full`, aby kontrola certifikátu nezávisela na měnící se interpretaci `sslmode=require` v PostgreSQL driveru.
 
 ## 2026-10-17 — Import a nekonzistentní data
 
@@ -59,3 +59,9 @@ Tento soubor zachycuje pouze rozhodnutí, která ovlivňují rozsah, interpretac
 - **Priorita:** Pro brzy končící školení se nejprve rezervuje nejpozdější volné místo ještě před koncem platnosti. Zbylá místa se chronologicky přidělí chybějícím, propadlým a případům, které už před termínem stihnout nelze; v rámci skupiny rozhoduje nejbližší konec platnosti a stabilní řazení zaměstnanců. Použijí se pouze budoucí plánované termíny a záporná volná kapacita se považuje za nulu.
 - **Omezení dat:** Export obsahuje jen počet obsazených míst, nikoli seznam přihlášených. Doporučení proto odečítá obsazenost, ale nemůže poznat, zda už konkrétní zaměstnanec přihlášen je; v produkci by bylo nutné napojení na registrační systém.
 - **Důvod:** Pro tento problém je auditovatelné pravidlo vhodnější než LLM. Uživatel musí rozumět, proč byl člověk doporučen a proč někdo termín nemá.
+
+## 2026-10-17 — Prezentační vrstva
+
+- **Rozhodnutí:** Výchozí pohled ukazuje pouze chybějící, propadlá a brzy končící školení. Platné záznamy zůstávají dostupné filtrem; tabulka má omezenou výšku, aby byly termíny dosažitelné bez procházení stovek řádků.
+- **Kvalita dat:** Varianty názvů útvarů se ve filtru seskupují bez ohledu na diakritiku a velikost písmen. Původní text se v řádku nemění, aby dashboard nezakrýval stav zdroje. Překročení kapacity termínu je zobrazeno jako datový problém, nikoli pouze jako nulová volná kapacita.
+- **Bezpečnost:** Databázový přístup je v server-only datové vrstvě. Do interaktivní komponenty se předává explicitní serializovatelné DTO bez zdrojových e-mailů, poznámek, cen, connection stringů a dalších nepotřebných polí.
